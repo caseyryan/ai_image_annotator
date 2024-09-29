@@ -31,7 +31,8 @@ dependencies:
   flutter:
     sdk: flutter
   lite_state: ^3.1.1
-  lite_forms: ^0.0.24
+  lite_forms:
+    path: local_plugins/lite_forms
 
 
   # The following adds the Cupertino Icons font to your application.

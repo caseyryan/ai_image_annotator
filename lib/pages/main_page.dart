@@ -12,7 +12,14 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).cardColor,
         title: const Text('AI Image Annotator'),
+        leading: IconButton(
+          onPressed: () {},
+          icon: const Icon(
+            Icons.menu_rounded,
+          ),
+        ),
       ),
       body: Center(
         child: InteractiveViewer(
