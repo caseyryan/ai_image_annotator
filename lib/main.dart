@@ -1,15 +1,31 @@
+import 'package:ai_image_annotator/constants.dart';
+import 'package:ai_image_annotator/get_page_by_route_name.dart';
 import 'package:ai_image_annotator/lite_state/long_living_controllers/image_annotator_controller.dart';
-import 'package:ai_image_annotator/pages/main_page.dart';
+import 'package:ai_image_annotator/lite_state/long_living_controllers/settings_controller.dart';
+import 'package:ai_image_annotator/lite_state/long_living_controllers/theme_controller.dart';
+import 'package:ai_image_annotator/theme_extensions/custom_color_theme.dart';
+import 'package:ai_image_annotator/theme_extensions/custom_text_theme.dart';
+import 'package:ai_image_annotator/widgets/snack_bar_overlay.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cupertino_bottom_sheet/flutter_cupertino_bottom_sheet.dart';
+import 'package:lite_forms/base_form_fields/lite_drop_selector/lite_drop_selector.dart';
+import 'package:lite_forms/base_form_fields/lite_text_form_field.dart';
+import 'package:lite_forms/utils/controller_initializer.dart';
+import 'package:lite_forms/utils/lite_forms_configuration.dart';
 import 'package:lite_state/lite_state.dart';
 
-part '_init_controller.dart';
+part 'main_parts/_generate_route.dart';
+part 'main_parts/_init_controller.dart';
+part 'main_parts/_init_lite_forms.dart';
+part 'main_parts/_widget_builder.dart';
+
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  static GlobalKey<NavigatorState> get navigatorKey => cupertinoBottomSheetNavigatorKey;
   const MyApp({super.key});
 
   @override
@@ -25,92 +41,103 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'AI Image Annotator',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          brightness: Brightness.dark,
-          seedColor: Colors.black,
-        ),
-        useMaterial3: true,
-      ),
-      home: const MainPage(),
+    return LiteState<SettingsController>(
+      /// [SettingsController] отвечает именно за настройки UI
+      builder: (BuildContext c, SettingsController settingsController) {
+        return LiteState<ThemeController>(
+          builder: (BuildContext c, ThemeController themeController) {
+            return CupertinoBottomSheetRepaintBoundary(
+              child: MaterialApp(
+                navigatorKey: cupertinoBottomSheetNavigatorKey,
+                onGenerateRoute: _generateRoute,
+                debugShowCheckedModeBanner: false,
+                showPerformanceOverlay: false,
+                title: 'AI Image Annotator',
+                theme: ThemeData(
+                  primarySwatch: Colors.deepOrange,
+                  primaryColor: Colors.deepOrange,
+                  splashFactory: InkRipple.splashFactory,
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.deepOrange.withOpacity(.05),
+                  scaffoldBackgroundColor: Colors.white,
+                  cardColor: Colors.white,
+                  canvasColor: Colors.white,
+                  appBarTheme: const AppBarTheme(
+                    backgroundColor: Colors.white,
+                  ),
+                  extensions: [
+                    CustomColorTheme.light(),
+                    CustomTextTheme.light(),
+                  ],
+                ),
+                darkTheme: ThemeData.dark(useMaterial3: true).copyWith(
+                  splashFactory: InkRipple.splashFactory,
+                  highlightColor: Colors.transparent,
+                  primaryColor: const Color.fromARGB(
+                    255,
+                    171,
+                    71,
+                    13,
+                  ),
+                  primaryColorDark: const Color.fromARGB(
+                    255,
+                    59,
+                    59,
+                    59,
+                  ),
+                  appBarTheme: const AppBarTheme(
+                    color: Color.fromARGB(
+                      255,
+                      59,
+                      59,
+                      59,
+                    ),
+                  ),
+                  cardColor: const Color.fromARGB(
+                    255,
+                    59,
+                    59,
+                    59,
+                  ),
+                  colorScheme: const ColorScheme.dark().copyWith(
+                    secondary: const Color.fromARGB(
+                      255,
+                      138,
+                      45,
+                      45,
+                    ),
+                  ),
+                  scaffoldBackgroundColor: const Color.fromARGB(
+                    255,
+                    51,
+                    51,
+                    51,
+                  ),
+                  extensions: [
+                    CustomColorTheme.dark(),
+                    CustomTextTheme.dark(),
+                  ],
+                ),
+                themeMode: themeController.themeMode,
+                builder: _build,
+              ),
+              // ),
+            );
+          },
+        );
+      },
     );
+    // return MaterialApp(
+    //   title: 'AI Image Annotator',
+    //   debugShowCheckedModeBanner: false,
+    //   theme: ThemeData(
+    //     colorScheme: ColorScheme.fromSeed(
+    //       brightness: Brightness.dark,
+    //       seedColor: Colors.black,
+    //     ),
+    //     useMaterial3: true,
+    //   ),
+    //   home: const MainPage(),
+    // );
   }
 }
-
-// class MyHomePage extends StatefulWidget {
-//   const MyHomePage({super.key, required this.title});
-
-//   // This widget is the home page of your application. It is stateful, meaning
-//   // that it has a State object (defined below) that contains fields that affect
-//   // how it looks.
-
-//   // This class is the configuration for the state. It holds the values (in this
-//   // case the title) provided by the parent (in this case the App widget) and
-//   // used by the build method of the State. Fields in a Widget subclass are
-//   // always marked "final".
-
-//   final String title;
-
-//   @override
-//   State<MyHomePage> createState() => _MyHomePageState();
-// }
-
-// class _MyHomePageState extends State<MyHomePage> {
-//   int _counter = 0;
-
-//   void _incrementCounter() {
-//     setState(() {
-//       // This call to setState tells the Flutter framework that something has
-//       // changed in this State, which causes it to rerun the build method below
-//       // so that the display can reflect the updated values. If we changed
-//       // _counter without calling setState(), then the build method would not be
-//       // called again, and so nothing would appear to happen.
-//       _counter++;
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // This method is rerun every time setState is called, for instance as done
-//     // by the _incrementCounter method above.
-//     //
-//     // The Flutter framework has been optimized to make rerunning build methods
-//     // fast, so that you can just rebuild anything that needs updating rather
-//     // than having to individually change instances of widgets.
-//     return Scaffold(
-//       appBar: AppBar(
-//         // TRY THIS: Try changing the color here to a specific color (to
-//         // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-//         // change color while the other colors stay the same.
-//         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-//         // Here we take the value from the MyHomePage object that was created by
-//         // the App.build method, and use it to set our appbar title.
-//         title: Text(widget.title),
-//       ),
-//       body: Center(
-//         // Center is a layout widget. It takes a single child and positions it
-//         // in the middle of the parent.
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: <Widget>[
-//             const Text(
-//               'You have pushed the button this many times:',
-//             ),
-//             Text(
-//               '$_counter',
-//               style: Theme.of(context).textTheme.headlineMedium,
-//             ),
-//           ],
-//         ),
-//       ),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: _incrementCounter,
-//         tooltip: 'Increment',
-//         child: const Icon(Icons.add),
-//       ), // This trailing comma makes auto-formatting nicer for build methods.
-//     );
-//   }
-// }

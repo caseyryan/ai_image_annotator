@@ -1,0 +1,4 @@
+extension ObjectExtension on Object {
+  
+}
+
