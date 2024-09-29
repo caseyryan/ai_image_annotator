@@ -1,3 +1,4 @@
+import 'package:ai_image_annotator/lite_state/long_living_controllers/image_annotator_controller.dart';
 import 'package:ai_image_annotator/pages/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:lite_state/lite_state.dart';
