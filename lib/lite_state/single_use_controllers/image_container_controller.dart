@@ -1,3 +1,7 @@
+import 'package:ai_image_annotator/models/coco_model/coco_annotation.dart';
+import 'package:ai_image_annotator/models/coco_model/coco_category.dart';
+import 'package:ai_image_annotator/models/coco_model/coco_image.dart';
+import 'package:ai_image_annotator/models/coco_model/coco_model.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:lite_state/lite_state.dart';
@@ -5,6 +9,11 @@ import 'package:lite_state/lite_state.dart';
 enum WorkMode {
   addPoint,
   movePoint,
+}
+
+enum AdditionType {
+  newShape,
+  newObject,
 }
 
 class ImageContainerController extends LiteStateController<ImageContainerController> {
@@ -21,14 +30,24 @@ class ImageContainerController extends LiteStateController<ImageContainerControl
     return Colors.blue;
   }
 
+  void onAddNew(AdditionType type) {
+    if (type == AdditionType.newShape) {
+      _annotation?.addNewShape();
+      rebuild();
+    } else if (type == AdditionType.newObject) {}
+  }
+
   double get margin {
     return 100.0;
   }
 
   void clearPoints() {
-    _pointVectors.clear();
-    _activeVectorIndex = 0;
+    _annotation?.clearPoints();
     rebuild();
+  }
+
+  CocoAnnotation? get _annotation {
+    return _cocoModel.activeAnnotation;
   }
 
   WorkMode _workMode = WorkMode.addPoint;
@@ -45,26 +64,32 @@ class ImageContainerController extends LiteStateController<ImageContainerControl
     return transformationController.value.getTranslation().y;
   }
 
-  final List<List<Offset>> _pointVectors = [[]];
+  final CocoModel _cocoModel = CocoModel(
+    annotations: [],
+    images: [
+      CocoImage(
+        fileName: 'City',
+        id: 0,
+        width: 564,
+        height: 705,
+      ),
+    ],
+    categories: [
+      CocoCategory(id: 0, name: 'Car'),
+      CocoCategory(id: 1, name: 'Woman'),
+    ],
+  );
 
-  List<List<Offset>> get pointVectors => _pointVectors;
+  List<List<Offset>> get pointVectors => _cocoModel.activeAnnotation?.pointVectors ?? [];
 
   Offset? _pendingPoint;
-
-  int _activeVectorIndex = 0;
 
   void _onTransformationUpdate() {
     rebuild();
   }
 
   List<Offset> get _activeVector {
-    if (_pointVectors.isEmpty) {
-      _pointVectors.add([]);
-    }
-    if (_activeVectorIndex >= _pointVectors.length) {
-      _activeVectorIndex = _pointVectors.length - 1;
-    }
-    return _pointVectors[_activeVectorIndex];
+    return _annotation?.activeVector ?? [];
   }
 
   void onPointerDown(PointerDownEvent event) {

@@ -25,3 +25,5 @@ class CocoCategory {
     return _$CocoCategoryToJson(this);
   }
 }
+
+

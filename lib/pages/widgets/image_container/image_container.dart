@@ -1,6 +1,6 @@
 import 'package:ai_image_annotator/extensions/string_extensions.dart';
 import 'package:ai_image_annotator/lite_state/single_use_controllers/image_container_controller.dart';
-import 'package:ai_image_annotator/pages/widgets/image_container/mode_selector.dart';
+import 'package:ai_image_annotator/pages/widgets/image_container/control_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:lite_state/lite_state.dart';
 
@@ -53,7 +53,7 @@ class _ImageContainerState extends State<ImageContainer> {
             Positioned(
               bottom: 20.0,
               right: 20.0,
-              child: ModeSelector(
+              child: ControlPanel(
                 controller: controller,
               ),
             ),
