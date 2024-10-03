@@ -20,6 +20,7 @@ class _ImageContainerState extends State<ImageContainer> {
   Widget build(BuildContext context) {
     return LiteState<ImageContainerController>(
       controller: _controller,
+      onReady: (ImageContainerController controller) {},
       builder: (BuildContext c, ImageContainerController controller) {
         return Stack(
           children: [

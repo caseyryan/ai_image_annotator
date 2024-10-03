@@ -16,9 +16,10 @@ class ControlPanel extends StatelessWidget {
 
   Widget _categoryIconBuilder(context, LiteDropSelectorItem item, isSelected) {
     final AdditionType additionType = item.payload as AdditionType;
+    const iconScale = .6;
     return SizedBox(
-      width: kButtonHeight * .8,
-      height: kButtonHeight * .8,
+      width: kButtonHeight * iconScale,
+      height: kButtonHeight * iconScale,
       child: SvgPicture.asset(
         '${additionType.name}.svg'.toSvgAssetPath(),
         color: additionType.color,
