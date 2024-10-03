@@ -1,6 +1,8 @@
 // ignore_for_file: depend_on_referenced_packages
 import 'dart:ui';
 
+import 'package:ai_image_annotator/extensions/string_extensions.dart';
+import 'package:ai_image_annotator/widgets/snack_bar_overlay.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'coco_annotation.g.dart';
@@ -69,8 +71,19 @@ class CocoAnnotation {
   }
 
   void addNewShape() {
-    pointVectors.add([]);
-    _activeVectorIndex ++;
+    if (pointVectors.isEmpty) {
+      pointVectors.add([]);
+    } else {
+      if (pointVectors.last.isNotEmpty) {
+        pointVectors.add([]);
+      } else {
+        showInformation(
+          title: 'Oops!'.translate(),
+          text: 'An empty shape already already exists for this object. Just draw it'.translate(),
+        );
+      }
+    }
+    _activeVectorIndex++;
   }
 
   static CocoAnnotation deserialize(Map<String, dynamic> json) {

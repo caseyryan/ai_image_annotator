@@ -12,8 +12,20 @@ enum WorkMode {
 }
 
 enum AdditionType {
-  newShape,
-  newObject,
+  shape,
+  object,
+  category;
+
+  Color get color {
+    switch (this) {
+      case AdditionType.shape:
+        return Colors.blue;
+      case AdditionType.object:
+        return Colors.red;
+      case AdditionType.category:
+        return Colors.green;
+    }
+  }
 }
 
 class ImageContainerController extends LiteStateController<ImageContainerController> {
@@ -31,10 +43,10 @@ class ImageContainerController extends LiteStateController<ImageContainerControl
   }
 
   void onAddNew(AdditionType type) {
-    if (type == AdditionType.newShape) {
+    if (type == AdditionType.shape) {
       _annotation?.addNewShape();
       rebuild();
-    } else if (type == AdditionType.newObject) {}
+    } else if (type == AdditionType.object) {}
   }
 
   double get margin {

@@ -1,3 +1,4 @@
+import 'package:ai_image_annotator/constants.dart';
 import 'package:ai_image_annotator/extensions/string_extensions.dart';
 import 'package:ai_image_annotator/lite_state/single_use_controllers/image_container_controller.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,18 @@ class ControlPanel extends StatelessWidget {
   });
 
   final ImageContainerController controller;
+
+  Widget _categoryIconBuilder(context, LiteDropSelectorItem item, isSelected) {
+    final AdditionType additionType = item.payload as AdditionType;
+    return SizedBox(
+      width: kButtonHeight * .8,
+      height: kButtonHeight * .8,
+      child: SvgPicture.asset(
+        '${additionType.name}.svg'.toSvgAssetPath(),
+        color: additionType.color,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,12 +61,19 @@ class ControlPanel extends StatelessWidget {
                   },
                   items: [
                     LiteDropSelectorItem(
+                      title: 'Add New Category'.translate(),
+                      payload: AdditionType.category,
+                      iconBuilder: _categoryIconBuilder,
+                    ),
+                    LiteDropSelectorItem(
                       title: 'Add New Shape'.translate(),
-                      payload: AdditionType.newShape,
+                      payload: AdditionType.shape,
+                      iconBuilder: _categoryIconBuilder,
                     ),
                     LiteDropSelectorItem(
                       title: 'Add New Object'.translate(),
-                      payload: AdditionType.newObject,
+                      payload: AdditionType.object,
+                      iconBuilder: _categoryIconBuilder,
                     ),
                   ],
                 ),
