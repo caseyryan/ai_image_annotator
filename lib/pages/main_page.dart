@@ -1,4 +1,5 @@
 import 'package:ai_image_annotator/lite_state/long_living_controllers/image_annotator_controller.dart';
+import 'package:ai_image_annotator/pages/widgets/custom_appbar.dart';
 import 'package:ai_image_annotator/pages/widgets/image_container/image_container.dart';
 import 'package:flutter/material.dart';
 import 'package:lite_state/lite_state.dart';
@@ -17,18 +18,9 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return LiteState<ImageAnnotatorController>(
       builder: (BuildContext c, ImageAnnotatorController controller) {
-        return Scaffold(
-          appBar: AppBar(
-            backgroundColor: Theme.of(context).cardColor,
-            title: const Text('AI Image Annotator'),
-            leading: IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.menu_rounded,
-              ),
-            ),
-          ),
-          body: const Center(
+        return const Scaffold(
+          appBar: CustomAppbar(),
+          body: Center(
             child: Stack(
               children: [
                 ImageContainer(),

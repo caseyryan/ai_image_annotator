@@ -127,17 +127,5 @@ class _MyAppState extends State<MyApp> {
         );
       },
     );
-    // return MaterialApp(
-    //   title: 'AI Image Annotator',
-    //   debugShowCheckedModeBanner: false,
-    //   theme: ThemeData(
-    //     colorScheme: ColorScheme.fromSeed(
-    //       brightness: Brightness.dark,
-    //       seedColor: Colors.black,
-    //     ),
-    //     useMaterial3: true,
-    //   ),
-    //   home: const MainPage(),
-    // );
   }
 }
