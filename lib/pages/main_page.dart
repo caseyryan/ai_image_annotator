@@ -17,6 +17,9 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return LiteState<ImageAnnotatorController>(
+      onReady: (controller) {
+        controller.tryLoadData();
+      },
       builder: (BuildContext c, ImageAnnotatorController controller) {
         return const Scaffold(
           appBar: CustomAppbar(),

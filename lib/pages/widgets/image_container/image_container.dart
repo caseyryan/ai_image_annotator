@@ -1,4 +1,5 @@
 import 'package:ai_image_annotator/extensions/string_extensions.dart';
+import 'package:ai_image_annotator/lite_state/long_living_controllers/image_annotator_controller.dart';
 import 'package:ai_image_annotator/lite_state/single_use_controllers/image_container_controller.dart';
 import 'package:ai_image_annotator/pages/widgets/image_container/control_panel.dart';
 import 'package:flutter/material.dart';
@@ -47,9 +48,17 @@ class _ImageContainerState extends State<ImageContainer> {
                 ),
               ),
             ),
-            MaterialButton(
-              onPressed: controller.clearPoints,
-              child: const Text('Clear'),
+            Column(
+              children: [
+                MaterialButton(
+                  onPressed: controller.clearPoints,
+                  child: const Text('Clear'),
+                ),
+                MaterialButton(
+                  onPressed: imageAnnotatorController.findImage,
+                  child: const Text('Load image'),
+                ),
+              ],
             ),
             Positioned(
               bottom: 20.0,

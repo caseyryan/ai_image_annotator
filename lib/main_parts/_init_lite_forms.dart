@@ -60,6 +60,10 @@ void _initLiteForms(
             color: CustomColorTheme.of(context).negativeColor,
           ),
           fillColor: const Color.fromARGB(255, 239, 239, 239),
+          hintStyle: const TextStyle(
+            fontSize: 16.0,
+            color:  Color.fromARGB(255, 200, 200, 200),
+          ),
           border: defaultBorder,
           enabledBorder: defaultBorder.copyWith(
             borderSide: const BorderSide(
@@ -97,6 +101,10 @@ void _initLiteForms(
           errorStyle: TextStyle(
             fontSize: 16.0,
             color: CustomColorTheme.of(context).negativeColor,
+          ),
+          hintStyle: const TextStyle(
+            fontSize: 16.0,
+            color:  Color.fromARGB(255, 233, 233, 233),
           ),
           border: defaultBorder,
           enabledBorder: defaultBorder.copyWith(
