@@ -22,7 +22,7 @@ class ControlPanel extends StatelessWidget {
       height: kButtonHeight * iconScale,
       child: SvgPicture.asset(
         '${additionType.name}.svg'.toSvgAssetPath(),
-        color: additionType.color,
+        // color: additionType.color,
       ),
     );
   }
