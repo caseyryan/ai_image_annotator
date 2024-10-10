@@ -8,6 +8,11 @@ extension DateTimeExtension on DateTime {
     return DateFormat('yMMMM').format(this);
   }
 
+  String toCocoDateFormat() {
+    // 2013-11-14 17:28:25
+    return DateFormat('yyyy-MM-dd HH:mm:ss').format(this);
+  }
+
   DateTime toMonthStart() {
     return subtract(Duration(days: day));
   }

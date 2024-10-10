@@ -3,7 +3,7 @@ part of '../main.dart';
 
 void _initLiteStateControllers() {
   initControllersLazy({
-    ImageAnnotatorController: () => ImageAnnotatorController(),
+    CocoImageAnnotatorController: () => CocoImageAnnotatorController(),
     SettingsController: () => SettingsController(),
     ThemeController: () => ThemeController(),
   });

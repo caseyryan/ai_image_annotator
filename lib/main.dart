@@ -1,6 +1,6 @@
 import 'package:ai_image_annotator/constants.dart';
 import 'package:ai_image_annotator/get_page_by_route_name.dart';
-import 'package:ai_image_annotator/lite_state/long_living_controllers/image_annotator_controller.dart';
+import 'package:ai_image_annotator/lite_state/long_living_controllers/coco_image_annotator_controller.dart';
 import 'package:ai_image_annotator/lite_state/long_living_controllers/settings_controller.dart';
 import 'package:ai_image_annotator/lite_state/long_living_controllers/theme_controller.dart';
 import 'package:ai_image_annotator/theme_extensions/custom_color_theme.dart';
