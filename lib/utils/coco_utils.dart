@@ -58,7 +58,7 @@ class Coco {
       if (dimensions != null) {
         /// we need to copy the image to our dataset and encode it to jpg
         final newFileName = _lastImageInDataset!.idToImageName(newImageId);
-        final success = await imageFile.encodeImageToJpg(
+        final success = await imageFile.encodeImageToJpgResizeAndSave(
           outputPath: imageDirectory.combinePath(newFileName),
           quality: 100,
         );

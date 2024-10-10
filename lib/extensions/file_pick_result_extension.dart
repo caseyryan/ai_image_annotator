@@ -31,16 +31,50 @@ extension FileExtension on File {
     return null;
   }
 
-  Future<bool> encodeImageToJpg({
+  Future<bool> encodeImageToJpgResizeAndSave({
     required String outputPath,
     int quality = 100,
+    int maxWidth = 640,
+    int maxHeight = 640,
   }) async {
     final bytes = await readAsBytes();
     img.Image? image = img.decodeImage(bytes);
 
     if (image != null) {
-      List<int> jpg = img.encodeJpg(
+      int originalWidth = image.width;
+      int originalHeight = image.height;
+
+      double aspectRatio = originalWidth / originalHeight;
+      int newWidth;
+      int newHeight;
+
+      if (originalWidth > originalHeight) {
+        // Landscape orientation
+        newWidth = maxWidth;
+        newHeight = (maxWidth / aspectRatio).round();
+        if (newHeight > maxHeight) {
+          newHeight = maxHeight;
+          newWidth = (maxHeight * aspectRatio).round();
+        }
+      } else {
+        // Portrait orientation
+        newHeight = maxHeight;
+        newWidth = (maxHeight * aspectRatio).round();
+        if (newWidth > maxWidth) {
+          newWidth = maxWidth;
+          newHeight = (maxWidth / aspectRatio).round();
+        }
+      }
+
+      img.Image resizedImage = img.copyResize(
         image,
+        width: newWidth,
+        height: newHeight,
+        interpolation: img.Interpolation.cubic,
+      );
+
+      List<int> jpg = img.encodeJpg(
+        resizedImage,
         quality: quality,
       );
       final outputFile = File(outputPath);
@@ -49,7 +83,6 @@ extension FileExtension on File {
     }
     return false;
   }
-
 }
 
 extension DirectoryExtension on Directory {
