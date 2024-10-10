@@ -64,6 +64,8 @@ class _CustomAppbarState extends State<CustomAppbar> {
           cocoImageAnnotatorController.createNewDataset();
         } else if (item.payload == 'new_image.svg') {
           cocoImageAnnotatorController.addImageToDataset();
+        } else if (item.payload == 'edit_image.svg') {
+          cocoImageAnnotatorController.selectImageToEdit();
         }
       },
       menuItemBuilder: (index, item, isLast, double menuWidth) {
@@ -134,12 +136,18 @@ class _CustomAppbarState extends State<CustomAppbar> {
           payload: 'file.svg',
           iconBuilder: _categoryIconBuilder,
         ),
-        if (cocoImageAnnotatorController.isDataSetSelected)
+        if (cocoImageAnnotatorController.isDataSetSelected) ...[
           LiteDropSelectorItem<String>(
-            title: 'Add Image To Dataset'.translate(),
+            title: 'Add New Image To Dataset'.translate(),
             payload: 'new_image.svg',
             iconBuilder: _categoryIconBuilder,
           ),
+          LiteDropSelectorItem<String>(
+            title: 'Select Image To Edit'.translate(),
+            payload: 'edit_image.svg',
+            iconBuilder: _categoryIconBuilder,
+          ),
+        ],
         LiteDropSelectorItem(
           payload: null,
           title: '',

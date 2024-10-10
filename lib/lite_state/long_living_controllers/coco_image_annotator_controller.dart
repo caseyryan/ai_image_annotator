@@ -7,6 +7,7 @@ import 'package:ai_image_annotator/models/coco_model/coco_model.dart';
 import 'package:ai_image_annotator/utils/coco_utils.dart';
 import 'package:ai_image_annotator/utils/platform_dialogs.dart';
 import 'package:ai_image_annotator/utils/system_alerts.dart';
+import 'package:flutter/rendering.dart';
 import 'package:lite_forms/lite_forms.dart';
 // import 'package:flutter_platform_alert/flutter_platform_alert.dart';
 
@@ -18,6 +19,22 @@ class CocoImageAnnotatorController extends LiteStateController<CocoImageAnnotato
   CocoImageAnnotatorController() : super(preserveLocalStorageOnControllerDispose: true);
 
   Coco? _coco;
+
+  CocoImage? _selectedCocoImage;
+  CocoImage? get selectedCocoImage => _selectedCocoImage;
+
+  bool get hasSelectedImage {
+    return selectedCocoImage != null;
+  }
+
+  File? get selectedImageAsFile {
+    if (!hasSelectedImage || _coco == null || selectedImageDirectory?.existsSync() != true) {
+      return null;
+    }
+    return File(
+      selectedImageDirectory!.combinePath(selectedCocoImage!.fileName!),
+    );
+  }
 
   bool get isDataSetSelected {
     return _coco != null;
@@ -61,6 +78,41 @@ class CocoImageAnnotatorController extends LiteStateController<CocoImageAnnotato
     }
   }
 
+  Future selectImageToEdit() async {
+    final result = await FilePicker.platform.pickFiles(
+      initialDirectory: selectedImageDirectory!.path,
+      type: FileType.image,
+      dialogTitle: 'Select Image From Dataset'.translate(),
+      allowMultiple: false,
+    );
+    if (result != null) {
+      final imageFile = result.toFile();
+      final selectedCocoImage = await _coco!.isFileInDataset(imageFile);
+      if (selectedCocoImage != null) {
+        debugPrint('Was present in the dataset');
+
+        /// was in dataset
+        _updateCocoImage(selectedCocoImage);
+      } else {
+        debugPrint('Was not in dataset');
+        final confirmed = await showConfirmation(
+          header: 'Confirmation required'.translate(),
+          text: 'This image is not yet in your dataset. Would you like to add it?'.translate(),
+        );
+        if (confirmed) {
+          await _saveImageToDataset(imageFile);
+        }
+      }
+    }
+  }
+
+  void _updateCocoImage(CocoImage? value) {
+    if (value != null) {
+      _selectedCocoImage = value;
+      rebuild();
+    }
+  }
+
   Future addImageToDataset() async {
     if (isLoading) {
       return;
@@ -73,20 +125,33 @@ class CocoImageAnnotatorController extends LiteStateController<CocoImageAnnotato
         dialogTitle: 'Select an Image File'.translate(),
         allowMultiple: false,
       );
-      if (result?.files.isNotEmpty == true) {
-        final imageFile = File(result!.files.first.path!);
-        bool success = await _coco!.addNewImage(
-          imageFile: imageFile,
-          imageDirectory: selectedImageDirectory!,
-        );
-        if (success) {
-          success = await _coco!.saveAsJson(
-            jsonFile: selectedAnnotationFile!,
-          );
-        }
+
+      if (result != null) {
+        final imageFile = result.toFile();
+        await _saveImageToDataset(imageFile);
       }
     }
     stopLoading();
+  }
+
+  Future _saveImageToDataset(File imageFile) async {
+    CocoImage? cocoImage = await _coco!.addNewImage(
+      imageFile: imageFile,
+      imageDirectory: selectedImageDirectory!,
+    );
+    if (cocoImage != null) {
+      bool success = await _coco!.saveAsJson(
+        jsonFile: selectedAnnotationFile!,
+      );
+      if (success) {
+        _updateCocoImage(cocoImage);
+      } else {
+        showAlert(
+          header: 'Error',
+          text: 'Could not save image to coco configuration json'.translate(),
+        );
+      }
+    }
   }
 
   Future pickImageDirectory() async {
@@ -107,6 +172,11 @@ class CocoImageAnnotatorController extends LiteStateController<CocoImageAnnotato
         _coco = Coco.fromString(json);
         tryOpenLastImage();
         rebuild();
+      } on PathAccessException catch (e) {
+        showAlert(
+          header: 'Could not load annotation file',
+          text: e.osError?.message ?? '',
+        );
       } catch (e) {
         showAlert(header: 'Error', text: e.toString());
       }
@@ -202,6 +272,7 @@ class CocoImageAnnotatorController extends LiteStateController<CocoImageAnnotato
         selectedAnnotationFile = jsonAnnotationFile;
         selectedImageDirectory = imageDirectory;
         rebuild();
+        tryLoadData();
       }
     }
   }

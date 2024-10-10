@@ -1,4 +1,3 @@
-import 'package:ai_image_annotator/extensions/string_extensions.dart';
 import 'package:ai_image_annotator/lite_state/long_living_controllers/coco_image_annotator_controller.dart';
 import 'package:ai_image_annotator/lite_state/single_use_controllers/image_container_controller.dart';
 import 'package:ai_image_annotator/pages/widgets/image_container/control_panel.dart';
@@ -8,7 +7,9 @@ import 'package:lite_state/lite_state.dart';
 import 'shape_painter.dart';
 
 class ImageContainer extends StatefulWidget {
-  const ImageContainer({super.key});
+  const ImageContainer({
+    super.key,
+  });
 
   @override
   State<ImageContainer> createState() => _ImageContainerState();
@@ -25,25 +26,29 @@ class _ImageContainerState extends State<ImageContainer> {
       builder: (BuildContext c, ImageContainerController controller) {
         return Stack(
           children: [
-            InteractiveViewer(
-              transformationController: controller.transformationController,
-              constrained: false,
-              boundaryMargin: EdgeInsets.all(
-                controller.margin,
-              ),
-              minScale: 0.1,
-              maxScale: 10.0,
-              child: Listener(
-                onPointerDown: controller.onPointerDown,
-                onPointerCancel: controller.onPointerCancel,
-                onPointerUp: controller.onPointerUp,
-                child: CustomPaint(
-                  foregroundPainter: ShapePainter(
-                    pointVectors: controller.pointVectors,
-                    shapeColor: controller.shapeColor,
-                  ),
-                  child: Image.asset(
-                    'street.jpg'.toImageAssetPath(),
+            Center(
+              child: SizedBox(
+                width: double.infinity,
+                height: double.infinity,
+                child: InteractiveViewer(
+                  transformationController: controller.transformationController,
+                  constrained: true,
+                  alignment: Alignment.topLeft,
+                  minScale: 1.0,
+                  maxScale: 10.0,
+                  child: Listener(
+                    onPointerDown: controller.onPointerDown,
+                    onPointerCancel: controller.onPointerCancel,
+                    onPointerUp: controller.onPointerUp,
+                    child: CustomPaint(
+                      foregroundPainter: ShapePainter(
+                        pointVectors: controller.pointVectors,
+                        shapeColor: controller.shapeColor,
+                      ),
+                      child: Image.file(
+                        cocoImageAnnotatorController.selectedImageAsFile!,
+                      ),
+                    ),
                   ),
                 ),
               ),

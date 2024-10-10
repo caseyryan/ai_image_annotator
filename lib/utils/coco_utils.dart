@@ -48,7 +48,16 @@ class Coco {
     return Coco.empty();
   }
 
-  Future<bool> addNewImage({
+  Future<CocoImage?> isFileInDataset(File value) async {
+    final fileName = value.name;
+    final imageInDataset = getImages(imageName: fileName);
+    if (imageInDataset.isNotEmpty) {
+      return imageInDataset.first;
+    }
+    return null;
+  }
+
+  Future<CocoImage?> addNewImage({
     required File imageFile,
     required Directory imageDirectory,
   }) async {
@@ -77,7 +86,7 @@ class Coco {
           final imageJson = image.toJson();
           _annotationJson['images'] ??= [];
           (_annotationJson['images'] as List).add(imageJson);
-          return true;
+          return image;
         } else {
           showAlert(
             header: 'Error'.translate(),
@@ -91,7 +100,7 @@ class Coco {
         );
       }
     }
-    return false;
+    return null;
   }
 
   factory Coco.empty() {
