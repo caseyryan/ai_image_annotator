@@ -1,34 +1,43 @@
+import 'package:ai_image_annotator/lite_state/long_living_controllers/coco_image_annotator_controller.dart';
 import 'package:ai_image_annotator/models/coco_model/coco_annotation.dart';
-import 'package:ai_image_annotator/models/coco_model/coco_category.dart';
 import 'package:ai_image_annotator/models/coco_model/coco_image.dart';
-import 'package:ai_image_annotator/models/coco_model/coco_model.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:lite_state/lite_state.dart';
 
-enum WorkMode {
-  addPoint,
-  movePoint,
-}
-
-enum AdditionType {
+enum ButtonType {
   shape,
   object,
-  category;
-
-  Color get color {
-    switch (this) {
-      case AdditionType.shape:
-        return Colors.blue;
-      case AdditionType.object:
-        return Colors.red;
-      case AdditionType.category:
-        return Colors.green;
-    }
-  }
+  category,
+  settings,
+  draw,
+  drag,
 }
 
 class ImageContainerController extends LiteStateController<ImageContainerController> {
+  Offset _rightOffset = Offset.zero;
+  Offset get rightOffset => _rightOffset;
+  List<CocoAnnotation> get _annotations => cocoImageAnnotatorController.annotations;
+
+  int _activeAnnotationIndex = 0;
+  int get activeAnnotationIndex {
+    if (_activeAnnotationIndex >= _annotations.length) {
+      _activeAnnotationIndex = _annotations.length - 1;
+    }
+    return _activeAnnotationIndex;
+  }
+
+  CocoImage get image {
+    return cocoImageAnnotatorController.selectedImage!;
+  }
+
+  CocoAnnotation? get activeAnnotation {
+    if (_annotations.isEmpty) {
+      return null;
+    }
+    return _annotations[_activeAnnotationIndex];
+  }
+
   TransformationController? _transformationController;
   TransformationController get transformationController {
     if (_transformationController == null) {
@@ -42,11 +51,16 @@ class ImageContainerController extends LiteStateController<ImageContainerControl
     return Colors.blue;
   }
 
-  void onAddNew(AdditionType type) {
-    if (type == AdditionType.shape) {
+  void updatePanelPosition(Offset offset) {
+    _rightOffset += offset;
+    rebuild();
+  }
+
+  void onAddNew(ButtonType type) {
+    if (type == ButtonType.shape) {
       _annotation?.addNewShape();
       rebuild();
-    } else if (type == AdditionType.object) {}
+    } else if (type == ButtonType.object) {}
   }
 
   double get margin {
@@ -59,10 +73,16 @@ class ImageContainerController extends LiteStateController<ImageContainerControl
   }
 
   CocoAnnotation? get _annotation {
-    return _cocoModel.activeAnnotation;
+    return activeAnnotation;
   }
 
-  WorkMode _workMode = WorkMode.addPoint;
+  ButtonType _workMode = ButtonType.draw;
+  ButtonType get workMode => _workMode;
+
+  void updateWorkMode(ButtonType value) {
+    _workMode = value;
+    rebuild();
+  }
 
   double get scale {
     return transformationController.value.getMaxScaleOnAxis();
@@ -76,23 +96,7 @@ class ImageContainerController extends LiteStateController<ImageContainerControl
     return transformationController.value.getTranslation().y;
   }
 
-  final CocoModel _cocoModel = CocoModel(
-    annotations: [],
-    images: [
-      CocoImage(
-        fileName: 'City',
-        id: 0,
-        width: 564,
-        height: 705,
-      ),
-    ],
-    categories: [
-      CocoCategory(id: 0, name: 'Car'),
-      CocoCategory(id: 1, name: 'Woman'),
-    ],
-  );
-
-  List<List<Offset>> get pointVectors => _cocoModel.activeAnnotation?.pointVectors ?? [];
+  List<List<Offset>> get pointVectors => activeAnnotation?.pointVectors ?? [];
 
   Offset? _pendingPoint;
 
@@ -105,7 +109,7 @@ class ImageContainerController extends LiteStateController<ImageContainerControl
   }
 
   void onPointerDown(PointerDownEvent event) {
-    if (_workMode == WorkMode.addPoint) {
+    if (_workMode == ButtonType.draw) {
       if (event.buttons != kSecondaryButton) {
         _pendingPoint = event.localPosition;
       }
@@ -114,7 +118,7 @@ class ImageContainerController extends LiteStateController<ImageContainerControl
 
   void onPointerUp(PointerUpEvent event) {
     final Offset localPosition = event.localPosition;
-    if (_workMode == WorkMode.addPoint) {
+    if (_workMode == ButtonType.draw) {
       if (_pendingPoint != null && (localPosition - _pendingPoint!).distance <= 10) {
         _activeVector.add(
           _pendingPoint!,

@@ -1,11 +1,8 @@
-import 'package:ai_image_annotator/extensions/theme_extensions.dart';
 import 'package:flutter/material.dart';
 
 @immutable
 class CustomColorTheme extends ThemeExtension<CustomColorTheme> {
   const CustomColorTheme({
-    required this.toneColors,
-    required this.hskColors,
     required this.circleButtonBackground,
     required this.circleButtonIconColor,
     required this.actionSheetColor,
@@ -19,8 +16,6 @@ class CustomColorTheme extends ThemeExtension<CustomColorTheme> {
     required this.wordHighlightColor,
   });
 
-  final List<Color> toneColors;
-  final List<Color> hskColors;
   final Color circleButtonBackground;
   final Color labelColor;
   final Color circleButtonIconColor;
@@ -35,25 +30,9 @@ class CustomColorTheme extends ThemeExtension<CustomColorTheme> {
 
   factory CustomColorTheme.light() {
     return const CustomColorTheme(
-      toneColors: [
-        Color(0xFFEE1C25),
-        Color(0xFF8D9092),
-        Color(0xFF1786aa),
-        Color(0xFFF1A32D),
-        Color(0xFF373737),
-      ],
-      hskColors: [
-        Color(0xFFfec82f),
-        Color(0xFF1786aa),
-        Color(0xFFfb6d37),
-        Color(0xFFeb4846),
-        Color(0xFF425e93),
-        Color(0xFFc05dbd),
-        Color(0xFF356922),
-      ],
-      circleButtonBackground: Colors.deepOrange,
-      circleButtonIconColor: Colors.white,
-      actionSheetColor: Colors.white,
+      circleButtonBackground: Color.fromARGB(255, 248, 248, 248),
+      circleButtonIconColor: Color.fromARGB(255, 55, 55, 55),
+      actionSheetColor: Color.fromARGB(255, 207, 207, 207),
       wordHighlightColor: Color.fromARGB(255, 250, 250, 224),
       paleBackgroundColor: Color.fromARGB(255, 247, 247, 247),
       positiveColor: Color.fromARGB(255, 32, 187, 37),
@@ -66,25 +45,9 @@ class CustomColorTheme extends ThemeExtension<CustomColorTheme> {
   }
   factory CustomColorTheme.dark() {
     return const CustomColorTheme(
-      toneColors: [
-        Color(0xFFEE1C25),
-        Color(0xFF8D9092),
-        Color(0xFF1786aa),
-        Color(0xFFF1A32D),
-        Color.fromARGB(255, 243, 243, 243),
-      ],
-      hskColors: [
-        Color(0xFFfec82f),
-        Color(0xFF1786aa),
-        Color(0xFFfb6d37),
-        Color(0xFFeb4846),
-        Color(0xFF425e93),
-        Color(0xFFc05dbd),
-        Color(0xFF356922),
-      ],
       circleButtonBackground: Color.fromARGB(255, 82, 82, 82),
       circleButtonIconColor: Color.fromARGB(255, 233, 233, 233),
-      actionSheetColor: Color.fromARGB(255, 41, 41, 41),
+      actionSheetColor: Color.fromARGB(255, 89, 89, 89),
       paleBackgroundColor: Color.fromARGB(255, 55, 55, 55),
       positiveColor: Color.fromARGB(255, 62, 157, 65),
       negativeColor: Color.fromARGB(255, 255, 72, 72),
@@ -94,22 +57,6 @@ class CustomColorTheme extends ThemeExtension<CustomColorTheme> {
       normalTextColor: Color.fromARGB(255, 243, 243, 243),
       labelColor: Color.fromARGB(255, 87, 87, 87),
     );
-  }
-
-  Color? getHskColor(int tone) {
-    tone -= 1;
-    if (hskColors.length <= tone) {
-      return null;
-    }
-    return hskColors[tone];
-  }
-
-  Color? getToneColor(int tone) {
-    tone -= 1;
-    if (toneColors.length <= tone || tone < 0) {
-      return normalTextStyle.color;
-    }
-    return toneColors[tone];
   }
 
   @override
@@ -127,16 +74,6 @@ class CustomColorTheme extends ThemeExtension<CustomColorTheme> {
     }
 
     return CustomColorTheme(
-      toneColors: lerpColorList(
-        from: toneColors,
-        to: other.toneColors,
-        t: t,
-      ),
-      hskColors: lerpColorList(
-        from: hskColors,
-        to: other.hskColors,
-        t: t,
-      ),
       circleButtonBackground: Color.lerp(
         circleButtonBackground,
         other.circleButtonBackground,

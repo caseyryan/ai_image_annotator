@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:ai_image_annotator/extensions/file_pick_result_extension.dart';
 import 'package:ai_image_annotator/extensions/string_extensions.dart';
+import 'package:ai_image_annotator/models/coco_model/coco_annotation.dart';
+import 'package:ai_image_annotator/models/coco_model/coco_category.dart';
 import 'package:ai_image_annotator/models/coco_model/coco_image.dart';
 import 'package:ai_image_annotator/models/coco_model/coco_model.dart';
 import 'package:ai_image_annotator/utils/coco_utils.dart';
@@ -20,19 +22,42 @@ class CocoImageAnnotatorController extends LiteStateController<CocoImageAnnotato
 
   Coco? _coco;
 
-  CocoImage? _selectedCocoImage;
-  CocoImage? get selectedCocoImage => _selectedCocoImage;
+  CocoImage? _selectedImage;
+  CocoImage? get selectedImage => _selectedImage;
+  List<CocoAnnotation> get annotations {
+    List<CocoAnnotation> currentAnnotations = [];
+    if (selectedImage != null && isDataSetSelected) {
+      currentAnnotations = _coco!.getAnnotations(
+        imageId: selectedImage!.id,
+      );
+    }
+    if (currentAnnotations.isEmpty) {
+      currentAnnotations.add(
+        CocoAnnotation(
+          imageId: selectedImage!.id,
+          area: 0.0,
+          bbox: [0.0, 0.0, 0.0, 0.0],
+          categoryId: null,
+          // id:
+        ),
+      );
+    }
+
+    return currentAnnotations;
+  }
 
   bool get hasSelectedImage {
-    return selectedCocoImage != null;
+    return selectedImage != null;
   }
+
+  List<CocoCategory> get categories => _coco?.getCategories() ?? [];
 
   File? get selectedImageAsFile {
     if (!hasSelectedImage || _coco == null || selectedImageDirectory?.existsSync() != true) {
       return null;
     }
     return File(
-      selectedImageDirectory!.combinePath(selectedCocoImage!.fileName!),
+      selectedImageDirectory!.combinePath(selectedImage!.fileName!),
     );
   }
 
@@ -79,6 +104,7 @@ class CocoImageAnnotatorController extends LiteStateController<CocoImageAnnotato
   }
 
   Future selectImageToEdit() async {
+    startLoading();
     final result = await FilePicker.platform.pickFiles(
       initialDirectory: selectedImageDirectory!.path,
       type: FileType.image,
@@ -104,11 +130,12 @@ class CocoImageAnnotatorController extends LiteStateController<CocoImageAnnotato
         }
       }
     }
+    stopLoading();
   }
 
   void _updateCocoImage(CocoImage? value) {
     if (value != null) {
-      _selectedCocoImage = value;
+      _selectedImage = value;
       rebuild();
     }
   }
@@ -244,15 +271,6 @@ class CocoImageAnnotatorController extends LiteStateController<CocoImageAnnotato
     );
     if (directoryPath?.isNotEmpty == true) {
       final directory = Directory(directoryPath!);
-      // final listing = directory.listSync();
-      // if (listing.isNotEmpty) {
-      //   final notEmpty = 'Directory is not empty. You cannot create a new dataset in this directory.'.translate();
-      //   await FlutterPlatformAlert.showAlert(
-      //     windowTitle: 'Error'.translate(),
-      //     text: notEmpty,
-      //     options: PlatformAlertOptions(),
-      //   );
-      // }
       final fileName = await showNativeInputDialog(
         cancelText: 'Cancel'.translate(),
         confirmText: 'Done'.translate(),

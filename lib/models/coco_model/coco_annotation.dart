@@ -24,10 +24,18 @@ class CocoAnnotation {
   int? imageId;
   @JsonKey(name: 'category_id')
   int? categoryId;
-  List<List<int>>? segmentation;
-  List<int>? bbox;
-  int? area;
+  // TODO: Implement RLE binary masks as well
+  List<List<double>>? segmentation;
+  List<double>? bbox;
+  double? area;
   int? iscrowd;
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  bool get isValid {
+    return segmentation?.isNotEmpty == true && area != null;
+  }
+
+  
 
   List<List<Offset>>? _pointVectors;
 

@@ -10,6 +10,7 @@ class ImageContainer extends StatefulWidget {
   const ImageContainer({
     super.key,
   });
+  
 
   @override
   State<ImageContainer> createState() => _ImageContainerState();
@@ -65,12 +66,8 @@ class _ImageContainerState extends State<ImageContainer> {
                 ),
               ],
             ),
-            Positioned(
-              bottom: 20.0,
-              right: 20.0,
-              child: ControlPanel(
-                controller: controller,
-              ),
+            ControlPanel(
+              controller: controller,
             ),
           ],
         );

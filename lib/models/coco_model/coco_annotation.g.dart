@@ -6,24 +6,19 @@ part of 'coco_annotation.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-CocoAnnotation _$CocoAnnotationFromJson(Map<String, dynamic> json) =>
-    CocoAnnotation(
+CocoAnnotation _$CocoAnnotationFromJson(Map<String, dynamic> json) => CocoAnnotation(
       id: (json['id'] as num?)?.toInt(),
       imageId: (json['image_id'] as num?)?.toInt(),
       categoryId: (json['category_id'] as num?)?.toInt(),
-      bbox: (json['bbox'] as List<dynamic>?)
-          ?.map((e) => (e as num).toInt())
-          .toList(),
-      area: (json['area'] as num?)?.toInt(),
+      bbox: (json['bbox'] as List<dynamic>?)?.map((e) => (e as num).toDouble()).toList(),
+      area: (json['area'] as num?)?.toDouble(),
       iscrowd: (json['iscrowd'] as num?)?.toInt(),
       segmentation: (json['segmentation'] as List<dynamic>?)
-          ?.map((e) =>
-              (e as List<dynamic>).map((e) => (e as num).toInt()).toList())
+          ?.map((e) => (e as List<dynamic>).map((e) => (e as num).toDouble()).toList())
           .toList(),
     );
 
-Map<String, dynamic> _$CocoAnnotationToJson(CocoAnnotation instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$CocoAnnotationToJson(CocoAnnotation instance) => <String, dynamic>{
       'id': instance.id,
       'image_id': instance.imageId,
       'category_id': instance.categoryId,

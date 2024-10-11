@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:ai_image_annotator/extensions/file_pick_result_extension.dart';
 import 'package:ai_image_annotator/extensions/string_extensions.dart';
 import 'package:ai_image_annotator/models/coco_model/coco_annotation.dart';
+import 'package:ai_image_annotator/models/coco_model/coco_category.dart';
 import 'package:ai_image_annotator/models/coco_model/coco_image.dart';
 import 'package:ai_image_annotator/utils/system_alerts.dart';
 
@@ -18,13 +19,20 @@ class Coco {
     final imageIds = getImageIds();
     if (imageIds.isNotEmpty) {
       imageIds.sort();
-      _lastImageInDataset = getImages(
+      _lastImage = getImages(
         imageId: imageIds.last,
       ).firstOrNull;
     }
+    final annotationIds = getAnnotationIds();
+    if (annotationIds.isNotEmpty) {
+      annotationIds.sort();
+      _lastAnnotationId = annotationIds.last;
+    }
   }
 
-  CocoImage? _lastImageInDataset;
+  int _lastAnnotationId = 0;
+
+  CocoImage? _lastImage;
 
   factory Coco.fromString(String json) {
     if (json.startsWith('{')) {
@@ -61,12 +69,12 @@ class Coco {
     required File imageFile,
     required Directory imageDirectory,
   }) async {
-    if (_lastImageInDataset != null) {
-      final newImageId = _lastImageInDataset!.id! + 1;
+    if (_lastImage != null) {
+      final newImageId = _lastImage!.id! + 1;
       final dimensions = await imageFile.getImageDimensions();
       if (dimensions != null) {
         /// we need to copy the image to our dataset and encode it to jpg
-        final newFileName = _lastImageInDataset!.idToImageName(newImageId);
+        final newFileName = _lastImage!.idToImageName(newImageId);
         final success = await imageFile.encodeImageToJpgResizeAndSave(
           outputPath: imageDirectory.combinePath(newFileName),
           quality: 100,
@@ -82,7 +90,7 @@ class Coco {
             height: dimensions.height,
             flickerUrl: '',
           );
-          _lastImageInDataset = image;
+          _lastImage = image;
           final imageJson = image.toJson();
           _annotationJson['images'] ??= [];
           (_annotationJson['images'] as List).add(imageJson);
@@ -128,9 +136,14 @@ class Coco {
     return false;
   }
 
-  List<dynamic> getImageIds() {
+  List<int> getImageIds() {
     final list = _annotationJson['images'] as List;
-    return list.map((e) => e['id']).toList();
+    return list.map((e) => e['id']).cast<int>().toList();
+  }
+
+  List<int> getAnnotationIds() {
+    final list = _annotationJson['annotations'] as List;
+    return list.map((e) => e['id']).cast<int>().toList();
   }
 
   List<CocoImage> getImages({
@@ -166,15 +179,16 @@ class Coco {
     return map != null ? CocoImage.fromJson(map.cast<String, dynamic>()) : null;
   }
 
-  List getCategories() {
-    return _annotationJson['categories'] as List;
+  List<CocoCategory> getCategories() {
+    final list = _annotationJson['categories'] as List;
+    return list.map((e) => CocoCategory.fromJson(e)).toList();
   }
 
   List<String> getCategoryNames() {
-    return getCategories().map((e) => e['name']).cast<String>().toList();
+    return getCategories().map((e) => e.name).cast<String>().toList();
   }
 
-  List<dynamic> getAnnotations({
+  List<CocoAnnotation> getAnnotations({
     Object? imageId,
     Object? categoryId,
   }) {
@@ -192,7 +206,7 @@ class Coco {
       keyName = 'category_id';
     }
 
-    List result = _annotationJson['annotations'] as List;
+    List result = (_annotationJson['annotations'] as List?) ?? [];
     if (searchId is int) {
       result = result.where((e) => e[keyName] == searchId).toList();
     } else if (searchId is String) {

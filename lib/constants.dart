@@ -3,9 +3,9 @@
 const double kPadding = 12.0;
 const double kBorderRadius = 12.0;
 const double kBlurSigma = 10.0;
-const double kButtonHeight = 48.0;
+const double kButtonHeight = 32.0;
 const double kSmallButtonHeight = 22.0;
-const double kBigButtonHeight = 57.0;
+const double kBigButtonHeight = 120.0;
 const double kInputHeight = 48.0;
 const double kUnselectedBorderWidth = 1.0;
 const double kSelectedBorderWidth = 2.0;

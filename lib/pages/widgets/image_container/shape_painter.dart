@@ -36,16 +36,19 @@ class ShapePainter extends CustomPainter {
       ..color = paintColor.withOpacity(.8)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
-
+    var points = <Offset>[];
     if (list.isNotEmpty) {
       var posX = list[0].dx;
       var posY = list[0].dy;
+
+      points.add(Offset(posX, posY));
 
       fillPath.moveTo(posX, posY);
       strokePath.moveTo(posX, posY);
       for (int i = 1; i < list.length; i++) {
         posX = list[i].dx;
         posY = list[i].dy;
+        points.add(Offset(posX, posY));
 
         fillPath.lineTo(posX, posY);
         strokePath.lineTo(posX, posY);
@@ -56,6 +59,31 @@ class ShapePainter extends CustomPainter {
 
       canvas.drawPath(fillPath, fillPaint);
       canvas.drawPath(strokePath, strokePaint);
+      for (var point in points) {
+        _drawPoint(
+          canvas: canvas,
+          point: point,
+          drawPoint: drawPoints,
+        );
+      }
+    }
+  }
+
+  void _drawPoint({
+    required Canvas canvas,
+    required Offset point,
+    bool drawPoint = true,
+  }) {
+    if (drawPoint) {
+      final Paint pointPaint = Paint()
+        ..color = Colors.white
+        ..strokeWidth = 1.0
+        ..style = PaintingStyle.stroke;
+      canvas.drawCircle(
+        point,
+        1.0,
+        pointPaint,
+      );
     }
   }
 

@@ -20,6 +20,14 @@ class CocoImage {
     this.cocoUrl,
   });
 
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  double get area {
+    if (width == null || height == null) {
+      return 0.0;
+    }
+    return (width! * height!).toDouble();
+  }
+
   int? id;
   int? license;
   @JsonKey(name: 'file_name')
