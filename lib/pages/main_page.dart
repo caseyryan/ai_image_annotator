@@ -170,7 +170,9 @@ class _MainPageState extends State<MainPage> {
             child: Stack(
               children: [
                 if (controller.hasSelectedImage)
-                  const ImageContainer()
+                  ImageContainer(
+                    key: Key(controller.selectedImage!.id.toString()),
+                  )
                 else if (controller.hasAnnotationFile)
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,

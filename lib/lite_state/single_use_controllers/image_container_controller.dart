@@ -17,12 +17,16 @@ enum ButtonType {
 class ImageContainerController extends LiteStateController<ImageContainerController> {
   Offset _rightOffset = Offset.zero;
   Offset get rightOffset => _rightOffset;
-  List<CocoAnnotation> get _annotations => cocoImageAnnotatorController.annotations;
+  List<CocoAnnotation>? _annotations;
+  List<CocoAnnotation> get annotations {
+    _annotations ??= cocoImageAnnotatorController.annotations;
+    return _annotations!;
+  }
 
   int _activeAnnotationIndex = 0;
   int get activeAnnotationIndex {
-    if (_activeAnnotationIndex >= _annotations.length) {
-      _activeAnnotationIndex = _annotations.length - 1;
+    if (_activeAnnotationIndex >= annotations.length) {
+      _activeAnnotationIndex = annotations.length - 1;
     }
     return _activeAnnotationIndex;
   }
@@ -32,10 +36,10 @@ class ImageContainerController extends LiteStateController<ImageContainerControl
   }
 
   CocoAnnotation? get activeAnnotation {
-    if (_annotations.isEmpty) {
+    if (annotations.isEmpty) {
       return null;
     }
-    return _annotations[_activeAnnotationIndex];
+    return annotations[_activeAnnotationIndex];
   }
 
   TransformationController? _transformationController;

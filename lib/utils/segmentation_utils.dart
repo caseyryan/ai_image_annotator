@@ -112,43 +112,6 @@ List<int> _rleEncode(
   return rle;
 }
 
-// Map _encodeRLE(
-//   List<List<int>> binaryMask,
-// ) {
-//   List<int> counts = [];
-//   int height = binaryMask.length;
-//   int width = binaryMask[0].length;
-
-//   for (int y = 0; y < height; y++) {
-//     int count = 0;
-//     for (int x = 0; x < width; x++) {
-//       if (binaryMask[y][x] == 1) {
-//         if (count == 0) {
-//           counts.add(0); // Add position of 1's
-//         }
-//         count++;
-//       } else {
-//         if (count > 0) {
-//           counts[counts.length - 1] += count; // Add length of 1's
-//           count = 0;
-//         }
-//       }
-//     }
-//     if (count > 0) {
-//       counts[counts.length - 1] += count; // Add length of 1's at the end of the row
-//     }
-
-//     // To signify the end of a row
-//     counts.add(0);
-//   }
-
-//   String rleCounts = counts.map((c) => c.toRadixString(36)).join();
-//   return {
-//     'size': [width, height],
-//     'counts': '"$rleCounts"'
-//   };
-// }
-
 void _fillPolygonInMask(
   List<List<int>> mask,
   List<Offset> polygon,
@@ -194,4 +157,43 @@ bool _isPointInPolygon(
     }
   }
   return inside;
+}
+
+/// Supports both List<int> and String RLEs
+List<List<double>> rleToContours(Map rle) {
+  List<int> counts;
+  if (rle['counts'] is List) {
+    counts = List<int>.from(rle['counts']);
+  } else {
+    // TODO: Decode string to list
+    counts = [];
+  }
+  List<int> size = List<int>.from(rle['size']);
+
+  int width = size[0];
+  int height = size[1];
+
+  List<List<double>> contours = [];
+
+  for (int i = 0; i < counts.length; i += 2) {
+    if (i + 1 >= counts.length) {
+      break;
+    }
+
+    int length = counts[i];
+    int start = counts[i + 1];
+    for (int j = 0; j < length; j++) {
+      int index = start + j;
+      if (index < 0 || index >= width * height) {
+        continue;
+      }
+
+      int x = index % width;
+      int y = index ~/ width;
+
+      contours.add([x.toDouble(), y.toDouble()]);
+    }
+  }
+
+  return contours;
 }

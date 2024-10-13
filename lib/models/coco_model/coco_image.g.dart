@@ -10,12 +10,14 @@ CocoImage _$CocoImageFromJson(Map<String, dynamic> json) => CocoImage(
       id: (json['id'] as num?)?.toInt(),
       license: (json['license'] as num?)?.toInt(),
       fileName: json['file_name'] as String?,
-      flickerUrl: json['flicker_url'] as String?,
       width: (json['width'] as num?)?.toInt(),
       height: (json['height'] as num?)?.toInt(),
-      dateCaptured: json['date_captured'] == null ? null : DateTime.parse(json['date_captured'] as String),
+      dateCaptured: json['date_captured'] == null
+          ? null
+          : DateTime.parse(json['date_captured'] as String),
+      flickerUrl: json['flickr_url'] as String?,
       cocoUrl: json['coco_url'] as String?,
-    )..flickerUrl = json['flickr_url'] as String?;
+    );
 
 Map<String, dynamic> _$CocoImageToJson(CocoImage instance) => <String, dynamic>{
       'id': instance.id,
@@ -25,6 +27,5 @@ Map<String, dynamic> _$CocoImageToJson(CocoImage instance) => <String, dynamic>{
       'flickr_url': instance.flickerUrl,
       'width': instance.width,
       'height': instance.height,
-      'flicker_url': instance.flickerUrl,
       'date_captured': encodeCocoDate(instance.dateCaptured),
     };

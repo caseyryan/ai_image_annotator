@@ -27,29 +27,23 @@ class _ImageContainerState extends State<ImageContainer> {
       builder: (BuildContext c, ImageContainerController controller) {
         return Stack(
           children: [
-            Center(
-              child: SizedBox(
-                width: double.infinity,
-                height: double.infinity,
-                child: InteractiveViewer(
-                  transformationController: controller.transformationController,
-                  constrained: true,
-                  alignment: Alignment.topLeft,
-                  minScale: 1.0,
-                  maxScale: 10.0,
-                  child: Listener(
-                    onPointerDown: controller.onPointerDown,
-                    onPointerCancel: controller.onPointerCancel,
-                    onPointerUp: controller.onPointerUp,
-                    child: CustomPaint(
-                      foregroundPainter: ShapePainter(
-                        pointVectors: controller.pointVectors,
-                        shapeColor: controller.shapeColor,
-                      ),
-                      child: Image.file(
-                        cocoImageAnnotatorController.selectedImageAsFile!,
-                      ),
-                    ),
+            InteractiveViewer(
+              transformationController: controller.transformationController,
+              constrained: false,
+              alignment: Alignment.topLeft,
+              minScale: 1.0,
+              maxScale: 10.0,
+              child: Listener(
+                onPointerDown: controller.onPointerDown,
+                onPointerCancel: controller.onPointerCancel,
+                onPointerUp: controller.onPointerUp,
+                child: CustomPaint(
+                  foregroundPainter: ShapePainter(
+                    pointVectors: controller.pointVectors,
+                    shapeColor: controller.shapeColor,
+                  ),
+                  child: Image.file(
+                    cocoImageAnnotatorController.selectedImageAsFile!,
                   ),
                 ),
               ),

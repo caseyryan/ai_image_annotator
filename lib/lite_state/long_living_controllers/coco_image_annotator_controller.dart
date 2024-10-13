@@ -9,6 +9,7 @@ import 'package:ai_image_annotator/models/coco_model/coco_model.dart';
 import 'package:ai_image_annotator/utils/coco_utils.dart';
 import 'package:ai_image_annotator/utils/platform_dialogs.dart';
 import 'package:ai_image_annotator/utils/system_alerts.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/rendering.dart';
 import 'package:lite_forms/lite_forms.dart';
 // import 'package:flutter_platform_alert/flutter_platform_alert.dart';
@@ -240,6 +241,11 @@ class CocoImageAnnotatorController extends LiteStateController<CocoImageAnnotato
   }
 
   set selectedImageDirectory(Directory? value) {
+    if (value != null) {
+      if (!value.existsSync()) {
+        value.createSync(recursive: true);
+      }
+    }
     setPersistentValue('selectedImageDirectory', value?.path);
   }
 
@@ -271,6 +277,32 @@ class CocoImageAnnotatorController extends LiteStateController<CocoImageAnnotato
     );
     if (directoryPath?.isNotEmpty == true) {
       final directory = Directory(directoryPath!);
+      final listing = directory.listSync();
+      if (listing.isNotEmpty) {
+        final entryNames = listing.map((e) => e.name).toList();
+        final jsons = entryNames.where((e) => e.endsWith('.json')).toList();
+        if (jsons.length == 1) {
+          final imageDir = listing.firstWhereOrNull((e) => e.name == jsons.first.replaceAll('.json', ''));
+          if (imageDir?.existsSync() == true) {
+            final confirmed = await showConfirmation(
+              header: 'Confirm'.translate(),
+              text:
+                  '${'This directory already contains data resembling a dataset. Would you like to open '.translate()} ${jsons.first}?',
+            );
+            if (confirmed) {
+              final jsonAnnotationFile = File(directory.combinePath(jsons.first));
+              final imageDirectory = Directory(directory.combinePath(
+                jsons.first.replaceAll('.json', ''),
+              ));
+              selectedAnnotationFile = jsonAnnotationFile;
+              selectedImageDirectory = imageDirectory;
+              rebuild();
+              tryLoadData();
+              return;
+            }
+          }
+        }
+      }
       final fileName = await showNativeInputDialog(
         cancelText: 'Cancel'.translate(),
         confirmText: 'Done'.translate(),
@@ -281,12 +313,6 @@ class CocoImageAnnotatorController extends LiteStateController<CocoImageAnnotato
       if (fileName?.isNotEmpty == true) {
         final jsonAnnotationFile = File(directory.combinePath('$fileName.json'));
         final imageDirectory = Directory(directory.combinePath(fileName!));
-        if (!jsonAnnotationFile.existsSync()) {
-          jsonAnnotationFile.createSync(recursive: true);
-        }
-        if (!imageDirectory.existsSync()) {
-          imageDirectory.createSync(recursive: true);
-        }
         selectedAnnotationFile = jsonAnnotationFile;
         selectedImageDirectory = imageDirectory;
         rebuild();
@@ -296,6 +322,11 @@ class CocoImageAnnotatorController extends LiteStateController<CocoImageAnnotato
   }
 
   set selectedAnnotationFile(File? value) {
+    if (value != null) {
+      if (!value.existsSync()) {
+        value.createSync(recursive: true);
+      }
+    }
     setPersistentValue('selectedAnnotationFile', value?.path);
   }
 

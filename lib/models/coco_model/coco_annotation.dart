@@ -2,6 +2,7 @@
 import 'dart:ui';
 
 import 'package:ai_image_annotator/extensions/string_extensions.dart';
+import 'package:ai_image_annotator/utils/segmentation_utils.dart';
 import 'package:ai_image_annotator/widgets/snack_bar_overlay.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -24,7 +25,7 @@ class CocoAnnotation {
   int? imageId;
   @JsonKey(name: 'category_id')
   int? categoryId;
-  // TODO: Implement RLE binary masks as well
+  @JsonKey(fromJson: _processSegmentation)
   List<List<double>>? segmentation;
   List<double>? bbox;
   double? area;
@@ -34,8 +35,6 @@ class CocoAnnotation {
   bool get isValid {
     return segmentation?.isNotEmpty == true && area != null;
   }
-
-  
 
   List<List<Offset>>? _pointVectors;
 
@@ -106,3 +105,16 @@ class CocoAnnotation {
     return _$CocoAnnotationToJson(this);
   }
 }
+
+List<List<double>>? _processSegmentation(data) {
+  if (data is List && data.every((e) => e is List)) {
+    final newData = data.map((e) => e.cast<double>()).toList();
+    return newData.cast<List<double>>();
+  } else if (data is Map) {
+    if (data.containsKey('counts')) {
+      return rleToContours(data);
+    }
+  }
+  return null;
+}
+
