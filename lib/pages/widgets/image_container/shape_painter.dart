@@ -1,22 +1,43 @@
+import 'package:ai_image_annotator/lite_state/single_use_controllers/image_container_controller.dart';
+import 'package:ai_image_annotator/models/coco_model/coco_annotation.dart';
 import 'package:flutter/material.dart';
 
 class ShapePainter extends CustomPainter {
-  final List<List<Offset>> pointVectors;
-  final Color shapeColor;
+  final VectorWrapper activeVectorWrapper;
+  final List<VectorWrapper> inactivePointVectors;
 
   ShapePainter({
-    required this.pointVectors,
-    required this.shapeColor,
+    required this.activeVectorWrapper,
+    required this.inactivePointVectors,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    for (var list in pointVectors) {
+    for (var list in activeVectorWrapper.points) {
+      final CocoAnnotation? annotation = activeVectorWrapper.annotation;
+      if (annotation == null) {
+        break;
+      }
       _drawList(
         canvas: canvas,
-        paintColor: shapeColor,
+        paintColor: annotation.color,
         list: list,
+        drawPoints: true,
       );
+    }
+    for (var vectorWrapper in inactivePointVectors) {
+      final CocoAnnotation? annotation = vectorWrapper.annotation;
+      if (annotation == null) {
+        break;
+      }
+      for (var points in vectorWrapper.points) {
+        _drawList(
+          canvas: canvas,
+          paintColor: annotation.color,
+          list: points,
+          drawPoints: true,
+        );
+      }
     }
   }
 
@@ -77,11 +98,11 @@ class ShapePainter extends CustomPainter {
     if (drawPoint) {
       final Paint pointPaint = Paint()
         ..color = Colors.white
-        ..strokeWidth = 1.0
+        ..strokeWidth = .5
         ..style = PaintingStyle.stroke;
       canvas.drawCircle(
         point,
-        1.0,
+        .2,
         pointPaint,
       );
     }
@@ -89,6 +110,6 @@ class ShapePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(ShapePainter oldDelegate) {
-    return true;
+    return false;
   }
 }

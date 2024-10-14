@@ -53,6 +53,14 @@ class CocoImageAnnotatorController extends LiteStateController<CocoImageAnnotato
 
   List<CocoCategory> get categories => _coco?.getCategories() ?? [];
 
+
+  CocoCategory? getCocoCategoryById(int? id) {
+    if (id == null) {
+      return null;
+    }
+    return categories.firstWhereOrNull((e) => e.id == id);
+  }
+
   File? get selectedImageAsFile {
     if (!hasSelectedImage || _coco == null || selectedImageDirectory?.existsSync() != true) {
       return null;

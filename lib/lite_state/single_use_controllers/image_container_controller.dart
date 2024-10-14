@@ -14,6 +14,15 @@ enum ButtonType {
   drag,
 }
 
+class VectorWrapper {
+  List<List<Offset>> points;
+  CocoAnnotation? annotation;
+  VectorWrapper({
+    required this.points,
+    required this.annotation,
+  });
+}
+
 class ImageContainerController extends LiteStateController<ImageContainerController> {
   Offset _rightOffset = Offset.zero;
   Offset get rightOffset => _rightOffset;
@@ -49,10 +58,6 @@ class ImageContainerController extends LiteStateController<ImageContainerControl
       _transformationController!.addListener(_onTransformationUpdate);
     }
     return _transformationController!;
-  }
-
-  Color get shapeColor {
-    return Colors.blue;
   }
 
   void updatePanelPosition(Offset offset) {
@@ -99,8 +104,30 @@ class ImageContainerController extends LiteStateController<ImageContainerControl
   double get translationY {
     return transformationController.value.getTranslation().y;
   }
+  VectorWrapper? _activeVectors;
+  VectorWrapper get activeVectors {
+    _activeVectors ??= VectorWrapper(
+        points: activeAnnotation?.pointVectors ?? [],
+        annotation: activeAnnotation,
+      );
+    return _activeVectors!;
+  }
 
-  List<List<Offset>> get pointVectors => activeAnnotation?.pointVectors ?? [];
+  List<VectorWrapper>? _inactiveVectors;
+  List<VectorWrapper> get inactiveVectors {
+    if (_inactiveVectors != null) {
+      return _inactiveVectors!;
+    }
+    if (annotations.isNotEmpty) {
+      _inactiveVectors = annotations.where((e) => e != activeAnnotation).map((e) {
+        return VectorWrapper(
+          points: e.pointVectors,
+          annotation: e,
+        );
+      }).toList();
+    }
+    return [];
+  }
 
   Offset? _pendingPoint;
 

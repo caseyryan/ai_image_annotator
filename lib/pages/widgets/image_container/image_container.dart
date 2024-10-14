@@ -10,7 +10,6 @@ class ImageContainer extends StatefulWidget {
   const ImageContainer({
     super.key,
   });
-  
 
   @override
   State<ImageContainer> createState() => _ImageContainerState();
@@ -38,9 +37,11 @@ class _ImageContainerState extends State<ImageContainer> {
                 onPointerCancel: controller.onPointerCancel,
                 onPointerUp: controller.onPointerUp,
                 child: CustomPaint(
+                  key: const Key('shapePainter'),
                   foregroundPainter: ShapePainter(
-                    pointVectors: controller.pointVectors,
-                    shapeColor: controller.shapeColor,
+                    activeVectorWrapper: controller.activeVectors,
+                    inactivePointVectors: controller.inactiveVectors,
+                    // shapeColor: controller.shapeColor,
                   ),
                   child: Image.file(
                     cocoImageAnnotatorController.selectedImageAsFile!,

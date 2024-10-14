@@ -2,8 +2,11 @@
 import 'dart:ui';
 
 import 'package:ai_image_annotator/extensions/string_extensions.dart';
+import 'package:ai_image_annotator/lite_state/long_living_controllers/coco_image_annotator_controller.dart';
+import 'package:ai_image_annotator/models/coco_model/coco_category.dart';
 import 'package:ai_image_annotator/utils/segmentation_utils.dart';
 import 'package:ai_image_annotator/widgets/snack_bar_overlay.dart';
+import 'package:flutter/material.dart' as material;
 import 'package:json_annotation/json_annotation.dart';
 
 part 'coco_annotation.g.dart';
@@ -30,6 +33,18 @@ class CocoAnnotation {
   List<double>? bbox;
   double? area;
   int? iscrowd;
+
+  CocoCategory? get category {
+    if (categoryId == null) {
+      return null;
+    }
+    /// this must always be dynamic since the categoryId can be changed by a user
+    return cocoImageAnnotatorController.getCocoCategoryById(categoryId);
+  }
+
+  Color get color {
+    return category?.color ?? material.Colors.blue;
+  }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   bool get isValid {
@@ -117,4 +132,3 @@ List<List<double>>? _processSegmentation(data) {
   }
   return null;
 }
-

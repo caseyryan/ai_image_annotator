@@ -179,9 +179,15 @@ class Coco {
     return map != null ? CocoImage.fromJson(map.cast<String, dynamic>()) : null;
   }
 
+  List<CocoCategory>? _cocoCategories;
+
   List<CocoCategory> getCategories() {
+    if (_cocoCategories != null) {
+      return _cocoCategories!;
+    }
     final list = _annotationJson['categories'] as List;
-    return list.map((e) => CocoCategory.fromJson(e)).toList();
+    _cocoCategories = list.map((e) => CocoCategory.fromJson(e)).toList();
+    return _cocoCategories!;
   }
 
   List<String> getCategoryNames() {

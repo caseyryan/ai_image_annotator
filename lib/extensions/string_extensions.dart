@@ -1,4 +1,5 @@
 import 'package:ai_image_annotator/i18n/ru.dart';
+import 'package:flutter/material.dart';
 
 extension StringExtensions on String {
   String toImageAssetPath() {
@@ -42,5 +43,23 @@ extension StringExtensions on String {
 
   String translate() {
     return ru[this] ?? this;
+  }
+
+  Color toColor({
+    double saturation = .68,
+    double lightness = .67,
+  }) {
+    var hash = 0;
+    for (var i = 0; i < length; i++) {
+      hash = codeUnitAt(i) + ((hash << 5) - hash);
+    }
+
+    var hue = (hash % 360).toDouble();
+    return HSLColor.fromAHSL(
+      1.0,
+      hue,
+      saturation,
+      lightness,
+    ).toColor();
   }
 }
